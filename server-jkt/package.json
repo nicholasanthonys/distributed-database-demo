@@ -1,0 +1,28 @@
+{
+  "name": "server-jkt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasanthonys/distributed-database-demo.git"
+  },
+  "author": "Nicholas Anthony S",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nicholasanthonys/distributed-database-demo/issues"
+  },
+  "homepage": "https://github.com/nicholasanthonys/distributed-database-demo#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.6.2"
+  }
+}
