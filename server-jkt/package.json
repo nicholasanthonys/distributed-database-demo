@@ -11,7 +11,7 @@
       "node_modules"
     ],
     "watch": [
-      "src"
+      "."
     ],
     "exec": "node -r tsconfig-paths/register -r ts-node/register index.ts",
     "ext": "ts, js"
