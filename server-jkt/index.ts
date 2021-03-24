@@ -1,22 +1,33 @@
 
-import express, { Application, Request, Response, NextFunction } from 'express'
-import Connection from 'db/connection'
+import dotenv from 'dotenv'
+//* load environment variable
+dotenv.config();
 
-//* Cors Middleware
-import cors from 'cors';
+import express, { Application, Request, Response, NextFunction } from 'express'
+import { Sequelize } from 'sequelize';;
+import cors from 'cors'
+import bookRoutes from './routes/BookRoutes';
+import sequelize from 'database/sequelize'
 
 const app: Application = express();
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
+//* middleware body parser
+app.use(express.json());
+app.use(cors())
 
-const connection = new Connection("localhost", "postgres","postgres","5432","db_books_jkt")
-connection.testConnection();
+sequelize.authenticate().
+  then(()=> console.log("connected to db"))
+  .catch(err => console.log(err));
+sequelize.sync({force :true})
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+
+app.use('/book', bookRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
