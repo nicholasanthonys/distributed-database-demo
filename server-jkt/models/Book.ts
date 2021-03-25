@@ -13,18 +13,22 @@ import BookSample from "./BookSample";
 interface BookAttributes {
   id: Number;
   title: String;
-  publisher : String;
+  publisher: String;
+  coverUrl: String;
+  author: String;
 };
 
 // Some attributes are optional in `Book.build` and `Book.create` calls
-interface BookCreationAttributes extends Optional<BookAttributes, "id"> {};
+interface BookCreationAttributes extends Optional<BookAttributes, "id"> { };
 
 class Book extends Model<BookAttributes, BookCreationAttributes>
 
   implements BookAttributes {
   public id!: Number; // Note that the `null assertion` `!` is required in strict mode.
   public title!: String;
-  public publisher! : String;
+  public publisher!: String;
+  public coverUrl!: String;
+  public author!: String;
 
   // timestamps!
   public readonly createdAt!: Date;
@@ -43,18 +47,28 @@ Book.init(
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique : true
+      unique: true
     },
     publisher: {
       type: DataTypes.STRING,
     },
-    
+    coverUrl: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    author: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
+
   },
   {
     tableName: "books",
     sequelize, // passing the `sequelize` instance is required
+    underscored: true
   }
 );
+
 
 
 export default Book
