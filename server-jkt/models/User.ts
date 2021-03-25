@@ -59,20 +59,21 @@ User.init(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique : true
+      unique: true
     },
     password: {
       type: DataTypes.STRING,
     },
-    isAdmin : {
-      type : DataTypes.BOOLEAN,
-      allowNull : false,
-      defaultValue : false
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   },
   {
     tableName: "users",
     sequelize, // passing the `sequelize` instance is required
+    underscored: true
   }
 );
 

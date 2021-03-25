@@ -60,6 +60,7 @@ BookSample.init(
   {
     tableName: "book_samples",
     sequelize, // passing the `sequelize` instance is required
+    underscored : true
   }
 );
 
