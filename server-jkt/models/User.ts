@@ -12,11 +12,11 @@ import {
 } from "sequelize";
 import BookSample from "./BookSample";
 
-import Lend from "./Lend";
 import sequelize from "database/sequelize";
 // These are all the attributes in the User model
-interface UserAttributes {
+export interface UserAttributes {
   id: number;
+  name: string;
   email: string;
   password: string;
   isAdmin: boolean;
@@ -29,6 +29,7 @@ class User extends Model<UserAttributes, UserCreationAttributes>
 
   implements UserAttributes {
   public id!: number; // Note that the `null assertion` `!` is required in strict mode.
+  public name!: string;
   public email!: string;
   public password!: string;
   public isAdmin!: boolean
@@ -56,6 +57,10 @@ User.init(
       autoIncrement: true,
       primaryKey: true,
     },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -63,18 +68,34 @@ User.init(
     },
     password: {
       type: DataTypes.STRING,
+ 
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
+      
     }
   },
   {
     tableName: "users",
     sequelize, // passing the `sequelize` instance is required
-    underscored: true
+    underscored: true,
+    defaultScope: {
+      // exclude password from select : https://stackoverflow.com/questions/27972271/sequelize-dont-return-password
+      attributes: { exclude: ['password'] },
+    },
+    scopes: {
+      withoutPassword: {
+        attributes: { exclude: ['password'] },
+      },
+      withPassword : {
+        attributes: {include :  ["password"] },
+      }
+    }
+
   }
+  
 );
 
 
