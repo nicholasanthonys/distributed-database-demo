@@ -3,16 +3,13 @@ import sequelize from "database/sequelize";
 import {
   Model,
   Optional,
-  HasManyAddAssociationMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
+
   DataTypes,
+  BelongsToCreateAssociationMixin,
+  BelongsToManyAddAssociationMixin,
 } from "sequelize";
 import Book from "./Book";
-import Lend from "./Lend";
-import User from "./User";
+
 
 
 
@@ -36,7 +33,7 @@ class BookSample extends Model<BookSampleAttributes, BookSampleCreationAttribute
   // timestamps!
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
+  public setBook!: BelongsToManyAddAssociationMixin<Book, number>
 }
 
 BookSample.init(
@@ -47,22 +44,24 @@ BookSample.init(
       primaryKey: true,
     },
     lendable: {
-      type:  DataTypes.BOOLEAN,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
     },
     location: {
       type: new DataTypes.STRING,
       allowNull: false
-    }
+    },
+
 
   },
   {
     tableName: "book_samples",
     sequelize, // passing the `sequelize` instance is required
-    underscored : true
+    underscored: true,
   }
 );
+
 
 
 
