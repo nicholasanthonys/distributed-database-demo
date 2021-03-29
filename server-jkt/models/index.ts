@@ -8,7 +8,7 @@ import sequelize from 'database/sequelize';
 
 
 export const syncrhonize = async function () {
-    sequelize.sync({ force: true })
+
     // Here we associate which actually populates out pre-declared `association` static and other methods.
     BookSample.belongsToMany(User, {
         through: Lend,
@@ -19,8 +19,17 @@ export const syncrhonize = async function () {
         through: Lend,
     });
 
+    Book.hasMany(BookSample, {
+        foreignKey: "book_id"
+    });
 
-    Book.belongsTo(BookSample);
+    BookSample.belongsTo(Book,{
+            foreignKey: {
+                name: "book_id",
+                allowNull: false
+            }
+        }
+    );
 
     await sequelize.sync({ force: true });
     console.log("All models were synchronized successfully.");
