@@ -41,7 +41,6 @@ Lend.init(
     returnedAt: {
       type: new DataTypes.INTEGER,
       allowNull: false,
-      unique: true
     },
 
   },
