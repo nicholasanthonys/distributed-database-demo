@@ -14,7 +14,7 @@ import BookSample from "./BookSample";
 
 // These are all the attributes in the Book model
 interface BookAttributes {
-  id: string;
+  id: Number;
   title: String;
   publisher: String;
   coverUrl: String;
@@ -29,7 +29,7 @@ interface BookCreationAttributes extends Optional<BookAttributes, "id"> {
 class Book extends Model<BookAttributes, BookCreationAttributes>
 
   implements BookAttributes {
-  public id!: string; // Note that the `null assertion` `!` is required in strict mode.
+  public id!: number; // Note that the `null assertion` `!` is required in strict mode.
   public title!: String;
   public publisher!: String;
   public coverUrl!: String;
@@ -46,8 +46,8 @@ class Book extends Model<BookAttributes, BookCreationAttributes>
 Book.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      allowNull : false,
       primaryKey: true,
     },
     title: {
