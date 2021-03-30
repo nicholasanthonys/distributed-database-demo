@@ -18,6 +18,8 @@ interface BookSampleAttributes {
   id: number;
   location: string;
   lendable: boolean;
+  bookId: Number;
+
 };
 
 // Some attributes are optional in `BookSample.build` and `BookSample.create` calls
@@ -29,6 +31,7 @@ class BookSample extends Model<BookSampleAttributes, BookSampleCreationAttribute
   public id!: number; // Note that the `null assertion` `!` is required in strict mode.
   public location!: string;
   public lendable!: boolean;
+  public bookId!: Number;
 
   // timestamps!
   public readonly createdAt!: Date;
@@ -39,8 +42,8 @@ class BookSample extends Model<BookSampleAttributes, BookSampleCreationAttribute
 BookSample.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
     lendable: {
@@ -52,7 +55,10 @@ BookSample.init(
       type: new DataTypes.STRING,
       allowNull: false
     },
-
+    bookId: {
+      type: DataTypes.INTEGER,
+      allowNull : false
+    }
 
   },
   {
