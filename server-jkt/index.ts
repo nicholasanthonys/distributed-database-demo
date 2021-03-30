@@ -3,13 +3,15 @@ import dotenv from 'dotenv'
 //* load environment variable
 dotenv.config();
 
-import express, { Application} from 'express'
+import express, { Application } from 'express'
 import cors from 'cors'
 import sequelize from 'database/sequelize'
 import { syncrhonize } from 'models';
 import validateToken from 'middleware/validate-token';
 import bookRoutes from './routes/BookRoutes';
 import AuthRoutes from './routes/AuthRoutes'
+import BookSampleRoutes from './routes/BookSampleRoutes';
+import { kill } from 'node:process';
 const app: Application = express();
 
 const port = process.env.PORT || 3000;
@@ -23,7 +25,7 @@ sequelize.authenticate().
   .catch(err => console.log(err));
 
 // synchronize to drop and recreate the table
-// syncrhonize();
+syncrhonize();
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -34,7 +36,9 @@ app.use('/auth', AuthRoutes)
 
 app.use(validateToken)
 app.use('/book', bookRoutes);
+app.use('/book-sample', BookSampleRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
+
 });
