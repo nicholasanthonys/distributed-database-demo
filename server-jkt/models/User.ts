@@ -13,6 +13,7 @@ import {
 import BookSample from "./BookSample";
 
 import sequelize from "database/sequelize";
+import Lend from "./Lend";
 // These are all the attributes in the User model
 export interface UserAttributes {
   id: number;
@@ -43,10 +44,11 @@ class User extends Model<UserAttributes, UserCreationAttributes>
   public hasBookSample!: HasManyHasAssociationMixin<BookSample, number>;
   public countBookSamples!: HasManyCountAssociationsMixin;
   public createBookSample!: HasManyCreateAssociationMixin<BookSample>;
+  public getLends! : HasManyGetAssociationsMixin<Lend>
 
-  public static associations: {
-    bookSamples: Association<User, BookSample>;
-  };
+  // public static associations: {
+  //   bookSamples: Association<User, BookSample>;
+  // };
 
 }
 
