@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import jsonwebtoken from 'jsonwebtoken';
 import decodeToken from '../utils/decodeToken';
 
 //* middleware to validate token
