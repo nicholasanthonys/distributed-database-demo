@@ -12,6 +12,7 @@ import sequelize from "database/sequelize";
 interface LendAttributes {
   id: number;
   returnedAt?: Date;
+  bookSampleId : string;
 
 };
 
@@ -23,6 +24,7 @@ class Lend extends Model<LendAttributes, LendCreationAttributes>
   implements LendAttributes {
   public id!: number; // Note that the `null assertion` `!` is required in strict mode.
   public returnedAt?: Date;
+  public bookSampleId! : string;
 
 
   // timestamps!
@@ -42,6 +44,10 @@ Lend.init(
       type: new DataTypes.INTEGER,
       allowNull: false,
     },
+    bookSampleId : {
+        type : DataTypes.UUID,
+        allowNull : false,
+    }
 
   },
   {

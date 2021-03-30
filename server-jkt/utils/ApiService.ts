@@ -2,10 +2,19 @@ import axios, { AxiosRequestConfig } from "axios"
 
 const ApiService = {
     init(baseUrl: string, authorization: any) {
+        console.log("base url is ")
+        console.log(baseUrl);
+        console.log('authorization is ')
+        console.log(authorization);
         axios.defaults.baseURL = baseUrl
-        axios.defaults.headers = authorization
-        axios.defaults.headers.post['Content-Type'] =
-            'application/json'
+        axios.defaults.headers = {
+            common : {
+                "Authorization" : authorization
+            } 
+        }
+
+        axios.defaults.headers["Content-Type"] = "application/json";
+        
     },
 
     setHeaderMultipartFormData() {
@@ -17,13 +26,15 @@ const ApiService = {
         return axios.get(`${resource}`, params)
     },
 
-    post(resource: string, data: any,) {
-        return axios.post(`${resource}`, data)
+    async post(resource: string, data: any,) {
+        console.log("post to ")
+        console.log(axios.defaults.baseURL);
+        return await axios.post(`${resource}`, data)
     },
 
 
-    put(resource: string, params: any) {
-        return axios.put(`${resource}`, params)
+    put(resource: string, data : any) {
+        return axios.put(`${resource}`, data)
     },
 
     delete(resource: string, params: any) {
