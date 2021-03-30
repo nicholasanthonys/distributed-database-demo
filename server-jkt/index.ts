@@ -35,7 +35,11 @@ app.use('/auth', AuthRoutes)
 
 
 app.use(validateToken)
+
+// always use this route to interact with book and book-sample
 app.use('/book', bookRoutes);
+
+//only use this route to site bandung
 app.use('/book-sample', BookSampleRoutes);
 
 app.listen(port, () => {
