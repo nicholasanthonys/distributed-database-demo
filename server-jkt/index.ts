@@ -11,7 +11,7 @@ import validateToken from 'middleware/validate-token';
 import bookRoutes from './routes/BookRoutes';
 import AuthRoutes from './routes/AuthRoutes'
 import BookSampleRoutes from './routes/BookSampleRoutes';
-import { kill } from 'node:process';
+import userRoutes from 'routes/UserRoutes';
 const app: Application = express();
 
 const port = process.env.PORT || 3000;
@@ -39,8 +39,12 @@ app.use(validateToken)
 // always use this route to interact with book and book-sample
 app.use('/book', bookRoutes);
 
+// always  use this route to interact with user and lends
+app.use('/user', userRoutes)
+
 //only use this route to site bandung
 app.use('/book-sample', BookSampleRoutes);
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
