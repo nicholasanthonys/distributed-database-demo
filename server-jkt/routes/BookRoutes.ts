@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import Book from 'models/Book';
 import BookSample from 'models/BookSample';
 import ApiService from 'utils/ApiService';
-
+import {InterfaceShowBookWithBookSample}  from '../interface/BookResponseInterface';
 var bookRouter = Router();
 
 bookRouter.post('/', async (req: Request, res: Response) => {
@@ -111,7 +111,6 @@ bookRouter.get('/book-sample', async (req: Request, res: Response) => {
          bookSampleJKT = await BookSample.findAll();
       }
 
-      console.log("book sample jkt is ")
       console.log(bookSampleJKT);
       // request to site bandung
       ApiService.init(process.env.SITE_URL_BDG!, req.headers.authorization);
@@ -119,8 +118,6 @@ bookRouter.get('/book-sample', async (req: Request, res: Response) => {
          bookId
       })
       bookSampleBDG = response.data;
-      console.log("response data is")
-      console.log(response.data);
 
       // join result bandung and jakarta
       let result = [...bookSampleJKT, ...bookSampleBDG]
@@ -150,6 +147,7 @@ bookRouter.post('/:id/book-sample', async (req: Request, res: Response) => {
                location,
                bookId: book.id
             })
+            console.log("here");
             await book.addBookSample(bookSample)
             // let bookWithBookSample = await Book.findOne({
             //    where: {
@@ -157,6 +155,8 @@ bookRouter.post('/:id/book-sample', async (req: Request, res: Response) => {
             //    },
             //    include: BookSample
             // });
+            console.log("book sample is ");
+            console.log(bookSample);
             return res.send(bookSample);
          }
 
@@ -180,6 +180,8 @@ bookRouter.post('/:id/book-sample', async (req: Request, res: Response) => {
          }
 
       } catch (error) {
+         console.log("error")
+         console.log(error);
          return res.status(500).send({
             message: error
          })
@@ -210,17 +212,17 @@ bookRouter.put('/:id/book-sample', async (req: Request, res: Response) => {
       try {
          if (location == "jakarta") {
             console.log("jakarta")
-           let updatedRows =  await BookSample.update({
+            let updatedRows = await BookSample.update({
                lendable,
                bookId
             }, {
                where: {
                   id
                },
-               returning : true
+               returning: true
             });
 
-       
+
             return res.send(updatedRows);
 
          }
@@ -283,10 +285,23 @@ bookRouter.get('/:id', async (req: Request, res: Response) => {
       let book = await Book.findOne({
          where: {
             id
-         }
+         },
+         include: BookSample
       })
       if (book) {
-         return res.status(200).send(book)
+         // also get from site bandung
+         ApiService.init(process.env.SITE_URL_BDG!, req.headers.authorization);
+         let response = await ApiService.get('/book-sample', {
+            bookId: book.id
+         })
+
+    
+         let bookSamplesBDg = response.data as Array<BookSample>
+         let bookJson = book.toJSON() as InterfaceShowBookWithBookSample;
+    
+         // union book samples to book json
+         bookJson.BookSamples =  [...bookJson.BookSamples, ...bookSamplesBDg]
+         return res.status(200).send(bookJson)
       }
 
       return res.status(400).send({
