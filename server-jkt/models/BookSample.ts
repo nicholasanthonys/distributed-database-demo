@@ -15,7 +15,7 @@ import Book from "./Book";
 
 // These are all the attributes in the BookSample model
 interface BookSampleAttributes {
-  id: number;
+  id: string;
   location: string;
   lendable: boolean;
   bookId: Number;
@@ -28,7 +28,7 @@ interface BookSampleCreationAttributes extends Optional<BookSampleAttributes, "i
 class BookSample extends Model<BookSampleAttributes, BookSampleCreationAttributes>
 
   implements BookSampleAttributes {
-  public id!: number; // Note that the `null assertion` `!` is required in strict mode.
+  public id!: string; // Note that the `null assertion` `!` is required in strict mode.
   public location!: string;
   public lendable!: boolean;
   public bookId!: Number;
