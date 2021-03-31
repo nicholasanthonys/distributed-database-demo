@@ -52,7 +52,7 @@ Lend.init(
     } ,
     userId : {
       type : DataTypes.INTEGER,
-      allowNull : false
+      allowNull : false,
     }
 
   },
@@ -64,7 +64,7 @@ Lend.init(
 );
 
 
-User.belongsToMany(BookSample, { through: Lend })
-BookSample.belongsToMany(User, { through: Lend })
+// User.belongsToMany(BookSample, { through: Lend })
+// BookSample.belongsToMany(User, { through: Lend })
 
 export default Lend;
