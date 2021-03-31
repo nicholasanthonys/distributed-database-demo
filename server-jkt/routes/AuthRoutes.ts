@@ -81,15 +81,14 @@ router.post("/login", async (req: Request, res: Response) => {
     if (!validPassword)
         return res.status(400).json({ error: "Password is wrong" });
 
-    const isAdmin = req.body.isAdmin as Boolean
     // create access token
-    const accessToken: String = generateAccessToken(user.name, user.email, user.id, isAdmin, `${process.env.ACCESS_TOKEN_SECRET}`, `${process.env.ACCESS_TOKEN_LIFE}`);
+    const accessToken: String = generateAccessToken(user.name, user.email, user.id, user.isAdmin, `${process.env.ACCESS_TOKEN_SECRET}`, `${process.env.ACCESS_TOKEN_LIFE}`);
 
     const refreshToken: String = generateAccessToken(
         user.name,
         user.email,
         user.id,
-        isAdmin,
+        user.isAdmin,
         `${process.env.REFRESH_TOKEN_SECRET}`, undefined
     );
 
