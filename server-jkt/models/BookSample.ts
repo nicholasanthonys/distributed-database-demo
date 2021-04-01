@@ -31,7 +31,7 @@ class BookSample extends Model<BookSampleAttributes, BookSampleCreationAttribute
   public id!: string; // Note that the `null assertion` `!` is required in strict mode.
   public location!: string;
   public lendable!: boolean;
-  public bookId!: Number;
+  public bookId!: number;
 
   // timestamps!
   public readonly createdAt!: Date;
