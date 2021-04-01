@@ -6,7 +6,7 @@ import sequelize from 'database/sequelize';
 
 
 export const syncrhonize = async function () {
-    // uncomment this will drop and recreate related table which model is changes
+    // //  uncomment this will drop and recreate related table which model is changes
     // await sequelize.sync({ force: true });
     BookSample.hasMany(Lend, {
         foreignKey: {
@@ -16,11 +16,11 @@ export const syncrhonize = async function () {
     })
 
     Lend.belongsTo(BookSample, {
-        foreignKey : {
-            name : 'book_sample_id',
-            allowNull : false
+        foreignKey: {
+            name: 'book_sample_id',
+            allowNull: false
         },
-        constraints : true
+        constraints: true
     });
 
     // uncomment this will drop and recreate related table which model is changes
