@@ -35,7 +35,6 @@ lendRouter.get('/', async (req: Request, res: Response) => {
     const bookSampleIdStr = req.query.bookSampleId as string;
     const userId = Number(userIdStr);
     const bookSampleId = Number(bookSampleIdStr);
-
     try {
         if (userId) {
             if (bookSampleId) {
@@ -44,16 +43,15 @@ lendRouter.get('/', async (req: Request, res: Response) => {
                         userId,
                         bookSampleId
                     },
-                    include :BookSample 
                 })
                 return res.send(lends);
 
             }
+            console.log("find by user id only triggered")
             let lends = await Lend.findAll({
                 where: {
                     userId,
                 },
-                include :BookSample 
             })
             return res.send(lends);
 
@@ -65,15 +63,12 @@ lendRouter.get('/', async (req: Request, res: Response) => {
                 where: {
                     bookSampleId,
                 },
-                include : BookSample
             })
             return res.send(lends);
 
         }
         // return all
-        let lends = await Lend.findAll({
-            include : BookSample
-        })
+        let lends = await Lend.findAll()
         return res.send(lends);
 
 
@@ -87,7 +82,21 @@ lendRouter.get('/', async (req: Request, res: Response) => {
 
 });
 
-lendRouter.put('/lends/:id', async (req: Request, res: Response) => {
+lendRouter.get('/:id', async (req : Request, res : Response) => {
+    
+    try {
+        let id = req.params.id as string
+       let lend = await Lend.findByPk(id) 
+       return res.send(lend);
+    } catch (error) {
+        console.log(error)     
+        return res.status(500).send({
+            message : error
+        })
+    }
+})
+
+lendRouter.put('/:id', async (req: Request, res: Response) => {
     const id = req.params.id as String
     const { returnedAt }: { returnedAt: Date } = req.body
     try {
@@ -107,7 +116,7 @@ lendRouter.put('/lends/:id', async (req: Request, res: Response) => {
     }
 })
 
-lendRouter.delete('/lends/:id', async (req : Request, res : Response) => {
+lendRouter.delete('/:id', async (req : Request, res : Response) => {
     const id = req.params.id as string 
     try {
         await Lend.destroy({
