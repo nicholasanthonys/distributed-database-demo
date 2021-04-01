@@ -5,7 +5,6 @@ import Lend from 'models/Lend';
 import User from 'models/User';
 import ApiService from 'utils/ApiService';
 import decodeToken from 'utils/decodeToken';
-import { BookSamplesJKT, BookSampleWithLend, LendInterface, LendResponseBDG, UserLendResponseUniversal, UserResponseJKT } from '../interface/LendResponseInterface'
 
 var userRouter = Router();
 
@@ -19,6 +18,29 @@ userRouter.get('/current', async (req: Request, res: Response) => {
     });
 });
 
+userRouter.get('/mylends', async (req : Request, res : Response) => {
+    const user = decodeToken(req);
+    if(user){
+        let lend = await Lend.findAll({
+            where : {
+                userId : user.id
+            }
+        })
+        
+        // find from site bandung
+        ApiService.init(process.env.SITE_URL_BDG!, req.headers.authorization);
+        let response = await ApiService.get('/lend', {
+            userId : user.id
+        });
+        let result = [...lend, ...response.data] ;
+        return res.send(result);
+
+    }
+    return response.status(401).send({
+        message : "access denied"
+    })
+});
+
 
 userRouter.get('/lends', async (req: Request, res: Response) => {
     try {
@@ -30,20 +52,7 @@ userRouter.get('/lends', async (req: Request, res: Response) => {
                     message: "Only admin can access this route to list all lends"
                 })
             }
-            const users = await User.findAll(
-                {
-                    include: [
-                        {
-                            model: BookSample,
-                            include: [{
-                                model: Book,
-
-                            }
-                            ]
-                        }
-                    ]
-                }
-            );
+            const lends = await Lend.findAll();
 
 
             ApiService.init(process.env.SITE_URL_BDG!, req.headers.authorization)
@@ -51,71 +60,11 @@ userRouter.get('/lends', async (req: Request, res: Response) => {
                 userId: loggedUser.id
             });
 
-            let LendsBDG = response.data as LendResponseBDG[];
+            let LendsBDG = response.data as Lend[];
+            let result = [...lends, ...LendsBDG]
 
 
-            console.log(response.data)
-            // format response
-            let usersResponse = users as unknown as UserLendResponseUniversal[]
-            console.log(users);
-            let lendResponsesUniversal: Array<UserLendResponseUniversal> = [];
-            usersResponse.forEach((user) => {
-                let lendResponse: UserLendResponseUniversal = {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    isAdmin: user.isAdmin,
-                    createdAt: user.createdAt,
-                    updatedAt: user.updatedAt,
-                    BookSamples: [],
-
-                }
-                console.log("book samples is ")
-                console.log(user.BookSamples);
-                user.BookSamples.forEach(bs => {
-                    let bookSampleWithLend: BookSampleWithLend = {
-                        id: bs.id,
-                        lendable: bs.lendable,
-                        location: bs.location,
-                        bookId: bs.bookId,
-                        createdAt: bs.createdAt,
-                        updatedAt: bs.updatedAt,
-                        Book: bs.Book,
-                        Lends: bs.Lend ? [bs.Lend] : [],
-                        Lend: bs.Lend
-
-                    }
-                    delete bookSampleWithLend.Lend
-                    LendsBDG.forEach(lend => {
-                        ``
-                        if (lend.BookSample.bookId == bs.Book.id) {
-                            console.log("push")
-                            // bookSampleWithLend.Lends.push(bs.Lend)
-                            let lendBdg: LendInterface = {
-                                id: lend.id,
-                                returnedAt: lend.returnedAt,
-                                bookSampleId: lend.bookSampleId,
-                                userId: lend.userId,
-                                createdAt: lend.createdAt,
-                                updatedAt: lend.updatedAt
-                            }
-                            bookSampleWithLend.Lends.push(lendBdg)
-                        }
-                    })
-
-                    lendResponse.BookSamples.push(bookSampleWithLend)
-
-                })
-                lendResponsesUniversal.push(lendResponse)
-
-
-            });
-
-
-            console.log("lend response universal is ")
-            console.log(lendResponsesUniversal);
-
-            return res.send(lendResponsesUniversal)
+            return res.send(result)
 
         }
         return res.status(401).send({
@@ -171,7 +120,7 @@ userRouter.post('/lends', async (req: Request, res: Response) => {
 });
 
 userRouter.put('/lends', async (req: Request, res: Response) => {
-    const { id, returnedAt }: { id: number, bookSampleId: string, returnedAt: Date } = req.body
+    const { id, returnedAt }: { id: string, bookSampleId: string, returnedAt: Date } = req.body
     let lend = await Lend.findByPk(id)
     const loggedUser = decodeToken(req);
     if (loggedUser && loggedUser.isAdmin) {
@@ -204,31 +153,81 @@ userRouter.put('/lends', async (req: Request, res: Response) => {
     })
 });
 
-
-userRouter.delete('/lends/:id', async (req : Request, res : Response) => {
-    let id = req.params.id as string; 
-    let idNumber = Number(id);
+userRouter.get('/lends/:id', async (req: Request, res: Response) => {
+    let id = req.params.id as string;
     try {
-       let lend = await Lend.findByPk(idNumber);
-       if(lend){
-           await Lend.destroy({
-            where : {
-                id : idNumber
+        let lend = await Lend.findByPk(id, {
+        });
+        if (lend) {
+            // from site jakarta
+            let user = await User.findByPk(lend.userId);
+            let bookSample = await BookSample.findByPk(lend.bookSampleId);
+            if (bookSample) {
+                let book = await Book.findByPk(bookSample.bookId);
+                return res.send({
+                    lend,
+                    user,
+                    book,
+                    bookSample
+                })
             }
-           })
-           return res.send({
-               message : "Lend deleted"
-           })
-       }
-       // make a delete request to server bdg
-       ApiService.init(process.env.SITE_URL_BDG!, req.headers.authorization);
-       let response = await ApiService.delete(`/lends/${idNumber}`, {});
-       return res.send(response.data);
+            return res.status(400).send({
+                message: "Book sample not found"
+            })
+
+        }
+
+        // find lend from bdg
+        ApiService.init(process.env.SITE_URL_BDG!, req.headers.authorization);
+        let lendResponse = await ApiService.get(`/lend/${id}`, {});
+        lend = lendResponse.data as Lend
+        if (lend) {
+            let user = await User.findByPk(lend.userId);
+            let bookSampleResponse = await ApiService.get(`/book-sample/${lend.bookSampleId}`, {});
+            let bookSample = bookSampleResponse.data as BookSample
+            let book = await Book.findByPk(bookSample.bookId);
+            return res.send({
+                lend,
+                user,
+                book,
+                bookSample
+            })
+
+        }
+        return res.status(400).send({
+            message : "Lend not found"
+        })
+
     } catch (error) {
         console.log(error);
-       return res.status(500).send({
-           message : error
-       }) 
+        return res.send(error);
+    }
+});
+
+userRouter.delete('/lends/:id', async (req: Request, res: Response) => {
+    let id = req.params.id as string;
+    let idNumber = Number(id);
+    try {
+        let lend = await Lend.findByPk(idNumber);
+        if (lend) {
+            await Lend.destroy({
+                where: {
+                    id: idNumber
+                }
+            })
+            return res.send({
+                message: "Lend deleted"
+            })
+        }
+        // make a delete request to server bdg
+        ApiService.init(process.env.SITE_URL_BDG!, req.headers.authorization);
+        let response = await ApiService.delete(`/lends/${idNumber}`, {});
+        return res.send(response.data);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            message: error
+        })
     }
 })
 
